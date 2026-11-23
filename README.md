@@ -11,7 +11,7 @@ Linux-система для Android на базе Ubuntu, с собственн�
 
 ```bash
 pkg install -y curl
-curl -fsSL https://raw.githubusercontent.com/YOUR_USER/nova-linux/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/akimzazaj23-tech/Nova-Linux-termux-/main/install.sh | bash
 ```
 
 ## Запуск
@@ -25,7 +25,6 @@ nova
 ## Переименование
 
 Открой `install.sh` и поменяй блок «НАСТРОЙКИ БРЕНДА» (`OS_NAME`, `OS_ID`, `OS_VERSION`, `OS_URL`, `ALIAS`).
-Не забудь заменить `YOUR_USER` на свой GitHub-ник в `install.sh` и README.
 
 > Обновление пакета `base-files` может вернуть оригинальный `/etc/os-release`.
 > Просто запусти `install.sh` ещё раз — он идемпотентный и заново применит брендинг.
