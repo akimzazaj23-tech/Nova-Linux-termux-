@@ -7,7 +7,7 @@ set -euo pipefail
 OS_NAME="Nova Linux"
 OS_ID="nova"
 OS_VERSION="1.0"
-OS_URL="https://github.com/YOUR_USER/nova-linux"
+OS_URL="https://github.com/akimzazaj23-tech/Nova-Linux-termux-"
 BASE_DISTRO="ubuntu"
 ALIAS="nova"          # команда входа: proot-distro login nova
 # ===================================================
@@ -85,3 +85,4 @@ EOF
 chmod +x "$PREFIX/bin/$OS_ID"
 
 log "Готово! Запуск: введи команду  $OS_ID"
+log "Для графического рабочего стола (Termux:X11) запусти: bash install-desktop.sh"
