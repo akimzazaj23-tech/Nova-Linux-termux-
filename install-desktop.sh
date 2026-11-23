@@ -9,21 +9,26 @@ DESKTOP_USER="nova" # обычный пользователь для рабоч�
 
 log() { printf '\033[1;36m[%s]\033[0m %s\n' "$OS_NAME" "$*"; }
 
-if [ -z "${PREFIX:-}" ] || [ ! -d "$PREFIX" ]; then
-  echo "Запусти скрипт внутри Termux." >&2
+BASE_URL="https://raw.githubusercontent.com/akimzazaj23-tech/Nova-Linux-termux-/main"
+
+if [ -z "${PREFIX:-}" ] || [ ! -d "$PREFIX" ] || [ "$(id -u)" = "0" ]; then
+  echo "Этот скрипт нужно запускать в Termux, а не внутри Linux." >&2
+  echo "Если у тебя приглашение 'root@localhost', набери: exit" >&2
+  echo "Запускай команду, когда увидишь приглашение '~ \$'." >&2
   exit 1
 fi
 
-ROOTFS="$PREFIX/var/lib/proot-distro/installed-rootfs/$ALIAS"
-if [ ! -d "$ROOTFS" ]; then
-  echo "Сначала установи систему: bash install.sh" >&2
-  exit 1
+# если базовая система не установлена — ставим её автоматически
+if ! proot-distro login "$ALIAS" -- true </dev/null >/dev/null 2>&1; then
+  log "Базовая система не найдена — сначала устанавливаю её..."
+  pkg install -y curl </dev/null
+  curl -fsSL "$BASE_URL/install.sh" | bash
 fi
 
 log "Ставлю X11-репозиторий, Termux:X11 и PulseAudio..."
-pkg install -y x11-repo
-pkg update -y
-pkg install -y termux-x11-nightly pulseaudio
+pkg install -y x11-repo </dev/null
+pkg update -y </dev/null
+pkg install -y termux-x11-nightly pulseaudio </dev/null
 
 read -r -d '' SETUP <<'EOS' || true
 set -e
@@ -40,7 +45,7 @@ chmod 440 "/etc/sudoers.d/$DESKTOP_USER"
 EOS
 
 log "Ставлю XFCE внутри системы (это долго, ~1 ГБ)..."
-proot-distro login "$ALIAS" -- env DESKTOP_USER="$DESKTOP_USER" bash -c "$SETUP"
+proot-distro login "$ALIAS" -- env DESKTOP_USER="$DESKTOP_USER" bash -c "$SETUP" </dev/null
 
 log "Создаю команду запуска 'nova-desktop'..."
 cat > "$PREFIX/bin/nova-desktop" <<'EOF'

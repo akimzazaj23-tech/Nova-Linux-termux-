@@ -14,22 +14,24 @@ ALIAS="nova"          # команда входа: proot-distro login nova
 
 log() { printf '\033[1;36m[%s]\033[0m %s\n' "$OS_NAME" "$*"; }
 
-if [ -z "${PREFIX:-}" ] || [ ! -d "$PREFIX" ]; then
-  echo "Запусти скрипт внутри Termux (версия с F-Droid или GitHub)." >&2
+if [ -z "${PREFIX:-}" ] || [ ! -d "$PREFIX" ] || [ "$(id -u)" = "0" ]; then
+  echo "Этот скрипт нужно запускать в Termux, а не внутри Linux." >&2
+  echo "Если у тебя приглашение 'root@localhost', набери: exit" >&2
+  echo "Запускай команду, когда увидишь приглашение '~ \$'." >&2
   exit 1
 fi
 
 log "Обновляю Termux и ставлю proot-distro..."
-pkg update -y
-pkg upgrade -y
-pkg install -y proot-distro curl
+pkg update -y </dev/null
+pkg upgrade -y </dev/null
+pkg install -y proot-distro curl </dev/null
 
 ROOTFS="$PREFIX/var/lib/proot-distro/installed-rootfs/$ALIAS"
 if [ -d "$ROOTFS" ]; then
   log "Система '$ALIAS' уже установлена — пропускаю загрузку, обновляю брендинг."
 else
   log "Скачиваю и устанавливаю базу ($BASE_DISTRO)..."
-  proot-distro install "$BASE_DISTRO" --override-alias "$ALIAS"
+  proot-distro install "$BASE_DISTRO" --override-alias "$ALIAS" </dev/null
 fi
 
 read -r -d '' REBRAND <<'EOS' || true
@@ -75,7 +77,7 @@ EOS
 log "Применяю брендинг и ставлю базовые пакеты..."
 proot-distro login "$ALIAS" -- env \
   OS_NAME="$OS_NAME" OS_ID="$OS_ID" OS_VERSION="$OS_VERSION" OS_URL="$OS_URL" \
-  bash -c "$REBRAND"
+  bash -c "$REBRAND" </dev/null
 
 log "Создаю команду запуска '$OS_ID'..."
 cat > "$PREFIX/bin/$OS_ID" <<EOF
